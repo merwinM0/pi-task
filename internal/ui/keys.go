@@ -37,6 +37,10 @@ func (d *decoder) feed(data []byte, now time.Time) []key {
 				keys = append(keys, up)
 			case 's', 'S', 'j':
 				keys = append(keys, down)
+			case 'a', 'A':
+				keys = append(keys, pageUp)
+			case 'd', 'D':
+				keys = append(keys, pageDown)
 			case '\r', '\n':
 				keys = append(keys, enter)
 			case 'q', 'Q':
@@ -54,6 +58,7 @@ func (d *decoder) feed(data []byte, now time.Time) []key {
 			key   key
 		}{
 			{"\033[A", up}, {"\033[B", down}, {"\033OA", up}, {"\033OB", down},
+			{"\033[D", pageUp}, {"\033[C", pageDown}, {"\033OD", pageUp}, {"\033OC", pageDown},
 			{"\033[5~", pageUp}, {"\033[6~", pageDown}, {"\033[H", home}, {"\033[F", end},
 			{"\033[1~", home}, {"\033[4~", end},
 		}

@@ -98,7 +98,7 @@ func (v *view) frame(width, height int, color bool) string {
 		return row{text: "终端过小 · Q 退出", color: warning}.render(width, color)
 	}
 	var rows []row
-	footer := "W/S ↑↓ 选择 · Enter 查看 · Q 退出"
+	footer := "W/S ↑↓ 选择 · A/D ←→ 翻页 · Enter 查看 · Q 退出"
 	if v.detailID == "" {
 		rows = append(rows, row{text: "PI TASK  /  最近 5 次工作", color: accent, bold: true}, row{text: strings.Repeat("━", width), color: accent})
 		if len(v.runs) == 0 {
@@ -125,7 +125,7 @@ func (v *view) frame(width, height int, color bool) string {
 			}
 		}
 	} else {
-		footer = "W/S ↑↓ 滚动 · PgUp/PgDn 翻页 · Esc 返回 · Q 退出"
+		footer = "W/S ↑↓ 滚动 · A/D ←→ 翻页 · Esc 返回 · Q 退出"
 		if v.current != nil {
 			run := v.current
 			symbol, state, stateColor := label(run.State)
@@ -155,16 +155,16 @@ func (v *view) frame(width, height int, color bool) string {
 	}
 	if width < 60 {
 		if v.detailID == "" {
-			footer = "W/S 选择 · Enter 查看 · Q 退出"
+			footer = "W/S ↑↓ · A/D ←→ · Enter/Q"
 		} else {
-			footer = "W/S 滚动 · Esc 返回 · Q 退出"
+			footer = "W/S ↑↓ · A/D ←→ · Esc/Q"
 		}
 	}
 	if width < 32 {
 		if v.detailID == "" {
-			footer = "W/S · Enter · Q"
+			footer = "WS/AD · Enter · Q"
 		} else {
-			footer = "W/S · Esc · Q"
+			footer = "WS/AD · Esc · Q"
 		}
 	}
 	// Reserve a row for read errors even in a short terminal; never hide a stale-snapshot warning.

@@ -109,6 +109,47 @@ def main():
                 os.waitpid(pid, 0)
             os.close(master)
 
+        # A/D and left/right arrows page a long plan, not merely decode as keys.
+        plan_args = []
+        for n in range(1, 31):
+            plan_args.extend(['--task', f'翻页步骤-{n:02d}'])
+        command('start', '--id', 'paging', '--title', '翻页回归', *plan_args)
+        pid, master = pty.fork()
+        if pid == 0:
+            os.execve(BINARY, [BINARY, 'status', '--id', 'paging'], env)
+        fcntl.ioctl(master, termios.TIOCSWINSZ, struct.pack('HHHH', 24, 80, 0, 0))
+        output = bytearray()
+        reaped = False
+        try:
+            first_page = '第 1–17 / 60 行'.encode()
+            second_page = '第 13–29 / 60 行'.encode()
+            pump_until(first_page)
+            for data, expected in (
+                (b'd', second_page), (b'a', first_page),
+                (b'D', second_page), (b'A', first_page),
+                (b'\x1b[C', second_page), (b'\x1b[D', first_page),
+                (b'\x1bOC', second_page), (b'\x1bOD', first_page),
+                (b'\x1b[6~', second_page), (b'\x1b[5~', first_page),
+            ):
+                output.clear()
+                os.write(master, data)
+                pump_until(expected)
+            os.write(master, b'q')
+            pump_until(b'\x1b[?1049l')
+            _, status = os.waitpid(pid, 0)
+            reaped = True
+            assert os.waitstatus_to_exitcode(status) == 0
+            assert termios.tcgetattr(master)[3] & termios.ICANON
+            assert json.loads(command('status', '--id', 'paging', '--json'))['revision'] == 1
+        finally:
+            if not reaped:
+                try:
+                    os.kill(pid, signal.SIGKILL)
+                except ProcessLookupError:
+                    pass
+                os.waitpid(pid, 0)
+            os.close(master)
+
         # Ctrl+C and external TERM also restore the terminal and do not mutate records.
         for key, sig, code in ((b'\x03', None, 130), (None, signal.SIGTERM, 143)):
             pid, master = pty.fork()
@@ -135,7 +176,7 @@ def main():
                         pass
                     os.waitpid(pid, 0)
                 os.close(master)
-        print('PTY OK: recent five, W/S/arrows/Enter, live updates, resize, read-only state, Q/Ctrl+C/TERM restore')
+        print('PTY OK: recent five, W/S/Enter, A/D/left/right paging, live updates, resize, read-only state, Q/Ctrl+C/TERM restore')
 
 
 if __name__ == '__main__':

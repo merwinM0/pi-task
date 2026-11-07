@@ -37,7 +37,8 @@ const help = `pi-task — 独立任务进度监看器（不执行任务）
 start 返回工作 ID；后续写入必须显式指定 ID，避免多个 Pi 会话串线。
 finish 不会自动给步骤打勾；completed 要求所有步骤确实已标记 done。
 
-界面：W/S 或 ↑/↓ 移动 · Enter 查看 · Esc 返回 · Q/Ctrl+C 退出
+界面：W/S 或 ↑/↓ 移动 · A/D 或 ←/→ 翻页 · Enter 查看 · Esc 返回 · Q/Ctrl+C 退出
+兼容：PageUp/PageDown 翻页，Home/End 到首尾；字母键支持大小写。
 环境：PI_TASK_HOME 覆盖状态目录；NO_COLOR 禁用颜色。
 无需服务、端口、API 密钥或 Pi 插件。仅支持 Unix 终端。
 `

@@ -34,6 +34,52 @@ func TestKeysAndSplitEscapeSequences(t *testing.T) {
 	}
 }
 
+func TestPagingKeysAndSplitLeftRightSequences(t *testing.T) {
+	for _, test := range []struct {
+		input string
+		want  key
+	}{
+		{"a", pageUp}, {"A", pageUp}, {"d", pageDown}, {"D", pageDown},
+		{"\033[D", pageUp}, {"\033[C", pageDown}, {"\033OD", pageUp}, {"\033OC", pageDown},
+		{"\033[5~", pageUp}, {"\033[6~", pageDown},
+	} {
+		t.Run(fmt.Sprintf("%q", test.input), func(t *testing.T) {
+			d := decoder{}
+			keys := d.feed([]byte(test.input), time.Now())
+			if len(keys) != 1 || keys[0] != test.want {
+				t.Fatal(keys)
+			}
+		})
+	}
+	for _, suffix := range []byte{'C', 'D'} {
+		d := decoder{}
+		now := time.Now()
+		if keys := d.feed([]byte("\033["), now); len(keys) != 0 {
+			t.Fatal(keys)
+		}
+		keys := d.feed([]byte{suffix}, now.Add(time.Millisecond))
+		want := pageDown
+		if suffix == 'D' {
+			want = pageUp
+		}
+		if len(keys) != 1 || keys[0] != want {
+			t.Fatal(keys)
+		}
+	}
+}
+
+func TestPagingHelpVisibleInWideAndNarrowViews(t *testing.T) {
+	for _, detail := range []string{"", "test"} {
+		for _, width := range []int{20, 40, 80} {
+			v := view{detailID: detail}
+			frame := v.frame(width, 24, false)
+			if !strings.Contains(frame, "A/D") && !strings.Contains(frame, "AD") {
+				t.Fatal(width, frame)
+			}
+		}
+	}
+}
+
 func TestFrameBoundsChineseEmojiAndSmallTerminals(t *testing.T) {
 	now := time.Now()
 	r := task.Run{ID: "test", Title: "中文标题 👩‍💻 very long title", Directory: "/home/mo/项目", State: task.Running, UpdatedAt: now,
