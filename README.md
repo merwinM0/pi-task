@@ -41,7 +41,7 @@ pi-task
 
 - [完整用法、fish 示例、存储与卸载](docs/USAGE.md)（中文）
 - [项目进度与范围](READMAP.md)
-- [维护约定与目录结构](Agent.md)
+- [维护约定与目录结构](AGENTS.md)
 
 ```fish
 make check

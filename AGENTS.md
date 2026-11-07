@@ -17,7 +17,7 @@
 - `internal/store/`：私有快照与并发写入；`internal/ui/`：只读终端界面和键盘解析。
 - `completions/`：fish 补全；`tests/pty_smoke.py`：真实终端回归。
 - `README.md`、`README.en.md`：同步维护的中英文简介；`docs/USAGE.md`：详细用法；`READMAP.md`：已实现能力与明确待办。
-- `Agent.md` 链接到本文件，兼容项目文档命名；Pi 自动加载 `AGENTS.md`，不维护两份重复规则。
+- 项目指令统一维护在 `AGENTS.md`，由 Pi 自动加载，不另建不同大小写、单复数变体或兼容链接。
 - 修改前先阅读上述文档与相关实现；修改后同步帮助、快捷键提示、文档和测试。
 - 使用 gofmt 格式化 Go 文件；执行 `make check`。终端行为修改另执行 `make build`、`python3 -B tests/pty_smoke.py ./bin/pi-task`；安装更新使用 `make install`，让用户重新打开查看器。
 - 只提交本次相关修改，使用准确的中文 Git 提交说明，不自行创建 Git 仓库。

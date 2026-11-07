@@ -41,7 +41,7 @@ Models may miss updates, so the display reflects the last reported state, not in
 
 - [Full usage, fish examples, storage, and removal](docs/USAGE.md) (Chinese)
 - [Project progress and scope](READMAP.md) (Chinese)
-- [Maintenance instructions and layout](Agent.md) (Chinese)
+- [Maintenance instructions and layout](AGENTS.md) (Chinese)
 
 ```fish
 make check
